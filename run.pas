@@ -28,6 +28,7 @@ type
 		quadro:string;
 		data:string;
 		medico:pessoa;
+		paciente:pessoa;
 end;
 
 type
@@ -406,6 +407,34 @@ procedure listarPacientes(pacientes:APacientes; termos:string);
 
 
 
+///////////////////////////CADASTRAR CONSULTA
+
+
+function getPacienteByName(pacientes:APacientes; termos:string):pessoa;
+	var
+		p:pessoa;
+		i:integer;
+		begin
+
+		end;
+
+function getMedicoByName(medicos:AMedicos;termos:string):pessoa;
+	var
+		p:pessoa;
+		i:integer;
+		begin
+
+		end;
+
+
+procedure cadastrarConsulta(var pessoas:APessoas; var pacientes:APacientes; var medicos:AMedicos; var consultas:AConsultas);
+	begin
+
+	end;
+
+
+
+
 ////////////////////////////MOSTRAR MENU
 
 procedure mostrarMenu(var pessoas:APessoas; var pacientes:APacientes; var medicos:AMedicos; var consultas:AConsultas);
@@ -490,6 +519,7 @@ Case menu_temp of
 		'6' : Begin
 			//Consultas Marcadas
 
+		buscar(pacientes, medicos, consultas, 'c');
 			End;
 
 
