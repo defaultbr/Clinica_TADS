@@ -246,26 +246,44 @@ procedure cadastrarPaciente(var pessoas:APacientes);
 
 ////////////////////////////LISTAR MEDICOS
 
-procedure listarMedicos(medicos:AMedicos);
+procedure listarMedicos(medicos:AMedicos; termos:string);
 	var 
 		i:integer;
 		count:integer;
 	begin
-		ClrScr;
 		count:=0;
 		for i:= 1 to 100 do
-			begin
-				if(length(medicos[i].pessoa.nome)>0) then
+					Begin
+				if(length(termos) > 0) then
 					begin
-						desenhar('-','-','-',false);
-						desenhar(' Medico ' + IntToStr(i) + ' ', '-', ' ',false);
-						desenhar('Nome: ' + medicos[i].pessoa.nome + ' ','-',' ',true);
-						desenhar('CPF: ' + medicos[i].pessoa.cpf + ' ','-',' ',true);
-						desenhar('Endereco: ' + medicos[i].pessoa.endereco + ' ','-',' ',true);
-						desenhar('Telefone: ' + medicos[i].pessoa.telefone + ' ','-',' ',true);
-						desenhar('-','-','-',false);
-						count:=count+1;
-						writeln('');
+						if(pos(termos,medicos[i].pessoa.nome) > 0) then
+							begin
+							desenhar('-','-','-',false);
+							desenhar(' Medico ' + IntToStr(i) + ' ', '-', ' ',false);
+							desenhar('Nome: ' + medicos[i].pessoa.nome + ' ','-',' ',true);
+							desenhar('CPF: ' + medicos[i].pessoa.cpf + ' ','-',' ',true);
+							desenhar('Endereco: ' + medicos[i].pessoa.endereco + ' ','-',' ',true);
+							desenhar('Telefone: ' + medicos[i].pessoa.telefone + ' ','-',' ',true);
+							desenhar('-','-','-',false);
+							count:=count+1;
+							writeln('');
+							end;
+
+					end
+				else 
+					begin
+						if(length(pacientes[i].pessoa.nome)>0) then
+							begin
+							desenhar('-','-','-',false);
+							desenhar(' Medico ' + IntToStr(i) + ' ', '-', ' ',false);
+							desenhar('Nome: ' + medicos[i].pessoa.nome + ' ','-',' ',true);
+							desenhar('CPF: ' + medicos[i].pessoa.cpf + ' ','-',' ',true);
+							desenhar('Endereco: ' + medicos[i].pessoa.endereco + ' ','-',' ',true);
+							desenhar('Telefone: ' + medicos[i].pessoa.telefone + ' ','-',' ',true);
+							desenhar('-','-','-',false);
+							count:=count+1;
+							writeln('');							
+							end;
 					end;
 			end;
 
@@ -278,36 +296,51 @@ procedure listarMedicos(medicos:AMedicos);
 				desenhar('-','-','-', false);
 			end;
 
-				desenhar('-','-','-', false);
-				desenhar(' Pressione enter para voltar ','-',' ', true);
-				desenhar('-','-','-', false);
-				readkey;
+				
 	end;
 
 
 
 ////////////////////////////LISTAR PACIENTES
 
-procedure listarPacientes(pacientes:APacientes);
+procedure listarPacientes(pacientes:APacientes; termos:string);
 	var 
 		i:integer;
 		count:integer;
 	begin
-		ClrScr;
 		count:=0;
 		for i:= 1 to 100 do
-			begin
-				if(length(pacientes[i].pessoa.nome)>0) then
+			Begin
+				if(length(termos) > 0) then
 					begin
-						desenhar('-','-','-',false);
-						desenhar(' Paciente ' + IntToStr(i) + ' ', '-', ' ',false);
-						desenhar('Nome: ' + pacientes[i].pessoa.nome + ' ','-',' ',true);
-						desenhar('CPF: ' + pacientes[i].pessoa.cpf + ' ','-',' ',true);
-						desenhar('Endereco: ' + pacientes[i].pessoa.endereco + ' ','-',' ',true);
-						desenhar('Telefone: ' + pacientes[i].pessoa.telefone + ' ','-',' ',true);
-						desenhar('-','-','-',false);
-						count:=count+1;
-						writeln('');
+						if(pos(termos,pacientes[i].pessoa.nome) > 0) then
+							begin
+							desenhar('-','-','-',false);
+							desenhar(' Paciente ' + IntToStr(i) + ' ', '-', ' ',false);
+							desenhar('Nome: ' + pacientes[i].pessoa.nome + ' ','-',' ',true);
+							desenhar('CPF: ' + pacientes[i].pessoa.cpf + ' ','-',' ',true);
+							desenhar('Endereco: ' + pacientes[i].pessoa.endereco + ' ','-',' ',true);
+							desenhar('Telefone: ' + pacientes[i].pessoa.telefone + ' ','-',' ',true);
+							desenhar('-','-','-',false);
+							count:=count+1;
+							writeln('');
+							end;
+
+					end
+				else 
+					begin
+						if(length(pacientes[i].pessoa.nome)>0) then
+							begin
+							desenhar('-','-','-',false);
+							desenhar(' Paciente ' + IntToStr(i) + ' ', '-', ' ',false);
+							desenhar('Nome: ' + pacientes[i].pessoa.nome + ' ','-',' ',true);
+							desenhar('CPF: ' + pacientes[i].pessoa.cpf + ' ','-',' ',true);
+							desenhar('Endereco: ' + pacientes[i].pessoa.endereco + ' ','-',' ',true);
+							desenhar('Telefone: ' + pacientes[i].pessoa.telefone + ' ','-',' ',true);
+							desenhar('-','-','-',false);
+							count:=count+1;
+							writeln('');							
+							end;
 					end;
 			end;
 
@@ -320,11 +353,57 @@ procedure listarPacientes(pacientes:APacientes);
 				desenhar('-','-','-', false);
 			end;
 
-				desenhar('-','-','-', false);
-				desenhar(' Pressione enter para voltar ','-',' ', true);
-				desenhar('-','-','-', false);
-				readkey;
+			
 	end;
+
+
+
+
+	procedure buscar(pacientes:APacientes; medicos:AMedicos;consultas:AConsultas; onde:string);
+		var 
+			termos:string;
+			i:integer;
+			count:integer;
+			continua:boolean;
+			decisao:char;
+		begin
+			decisao:=#12;
+			continua:= true;
+
+
+		repeat
+			write('Digite os termos de busca: ');
+			readln(termos);
+			case onde of
+				'p': 
+					begin
+						ClrScr;
+						desenhar(' Buscando Pacientes por: ' + termos, '-','-', false);
+						listarPacientes(pacientes, termos);
+
+					end;
+				'm': 
+					begin
+						ClrScr;
+						desenhar(' Buscando Medicos por: ' + termos, '-','-', false);
+						listarMedicos(medicos, termos);
+					end;
+
+
+
+			end;
+			desenhar('-', '-','-', false);
+				desenhar('[Enter] Outra Busca', '-',' ', true);
+				desenhar(' [ESC]  Finaliza Busca ', '-',' ', true);
+				desenhar('-', '-','-', false);
+				decisao:= readkey;
+				if(decisao = #27) then
+					continua := false
+					else
+					continua := true;
+			until(continua = false);
+		end;
+
 
 
 ////////////////////////////MOSTRAR MENU
@@ -383,13 +462,22 @@ Case menu_temp of
 
 		'3' : Begin
 			//Buscar Paciente
-			
-
+			ClrScr;
+			buscar(pacientes, medicos, consultas, 'p');
+				// desenhar('-','-','-', false);
+				// desenhar(' Pressione enter para voltar ','-',' ', true);
+				// desenhar('-','-','-', false);
+				// readkey;			
 			End;
 
 		'4' : Begin
 			//Buscar Medico
-
+			ClrScr;
+			buscar(pacientes, medicos, consultas, 'm');
+				// desenhar('-','-','-', false);
+				// desenhar(' Pressione enter para voltar ','-',' ', true);
+				// desenhar('-','-','-', false);
+				// readkey;
 			End;						
 
 
@@ -408,15 +496,23 @@ Case menu_temp of
 			
 		'7' : Begin
 			//Listar Pacientes
-			listarPacientes(pacientes);
-
+			ClrScr;
+			listarPacientes(pacientes, '');
+				desenhar('-','-','-', false);
+				desenhar(' Pressione enter para voltar ','-',' ', true);
+				desenhar('-','-','-', false);
+				readkey;
 			End;
 
 
 		'8' : Begin
 			//Listar Médicos
-			listarMedicos(medicos);
-
+			ClrScr;
+			listarMedicos(medicos, '');
+				desenhar('-','-','-', false);
+				desenhar(' Pressione enter para voltar ','-',' ', true);
+				desenhar('-','-','-', false);
+				readkey;
 			End;
 	End; {CASE}
 
