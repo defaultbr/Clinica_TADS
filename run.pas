@@ -4,6 +4,7 @@ uses crt,sysutils;
 
 type
 	pessoa= record
+		id:integer;
 		nome:string;
 		cpf:string;
 		endereco:string;
@@ -212,6 +213,7 @@ procedure cadastrarPaciente(var pessoas:APacientes);
 			if(continua) then
 				begin
 				ClrScr;
+				pacientes[i].pessoa.id := i;
 				nome := 'Digite o dados da pessoa ' + (IntToStr(i));
 				desenhar(nome, '-', '-', true);
 				write('Digite o nome: ');
@@ -304,7 +306,7 @@ procedure listarMedicos(medicos:AMedicos; termos:string);
 
 ////////////////////////////LISTAR PACIENTES
 
-procedure listarPacientes(pacientes:APacientes; termos:string);
+function listarPacientes(pacientes:APacientes; termos:string;show:boolean):integer;
 	var 
 		i:integer;
 		count:integer;
@@ -316,15 +318,19 @@ procedure listarPacientes(pacientes:APacientes; termos:string);
 					begin
 						if(pos(termos,pacientes[i].pessoa.nome) > 0) then
 							begin
+							if(show) then
+								begin
 							desenhar('-','-','-',false);
+							desenhar(' ID: ' + IntToStr(i) + ' ', '-', ' ',false);
 							desenhar(' Paciente ' + IntToStr(i) + ' ', '-', ' ',false);
 							desenhar('Nome: ' + pacientes[i].pessoa.nome + ' ','-',' ',true);
 							desenhar('CPF: ' + pacientes[i].pessoa.cpf + ' ','-',' ',true);
 							desenhar('Endereco: ' + pacientes[i].pessoa.endereco + ' ','-',' ',true);
 							desenhar('Telefone: ' + pacientes[i].pessoa.telefone + ' ','-',' ',true);
 							desenhar('-','-','-',false);
-							count:=count+1;
 							writeln('');
+								end;
+							count:=count+1;
 							end;
 
 					end
@@ -332,29 +338,26 @@ procedure listarPacientes(pacientes:APacientes; termos:string);
 					begin
 						if(length(pacientes[i].pessoa.nome)>0) then
 							begin
+							if(show) then
+								begin
 							desenhar('-','-','-',false);
+							desenhar(' ID: ' + IntToStr(i) + ' ', '-', ' ',false);
 							desenhar(' Paciente ' + IntToStr(i) + ' ', '-', ' ',false);
 							desenhar('Nome: ' + pacientes[i].pessoa.nome + ' ','-',' ',true);
 							desenhar('CPF: ' + pacientes[i].pessoa.cpf + ' ','-',' ',true);
 							desenhar('Endereco: ' + pacientes[i].pessoa.endereco + ' ','-',' ',true);
 							desenhar('Telefone: ' + pacientes[i].pessoa.telefone + ' ','-',' ',true);
 							desenhar('-','-','-',false);
+							writeln('');				
+								end;			
 							count:=count+1;
-							writeln('');							
 							end;
 					end;
 			end;
 
 			writeln('');
 
-		if(count = 0) then
-			begin
-				desenhar('-','-','-', false);
-				desenhar(' 0 Pacientes cadastrados ','-',' ', true);
-				desenhar('-','-','-', false);
-			end;
-
-			
+		listarPacientes := count;
 	end;
 
 
@@ -380,14 +383,20 @@ procedure listarPacientes(pacientes:APacientes; termos:string);
 					begin
 						ClrScr;
 						desenhar(' Buscando Pacientes por: ' + termos, '-','-', false);
-						listarPacientes(pacientes, termos);
-
+						count := listarPacientes(pacientes, termos, true);
+if(count = 0) then
+			begin
+				desenhar('-','-','-', false);
+				desenhar(' 0 Pacientes cadastrados ','-',' ', true);
+				desenhar('-','-','-', false);
+			end;
 					end;
 				'm': 
 					begin
 						ClrScr;
 						desenhar(' Buscando Medicos por: ' + termos, '-','-', false);
 						listarMedicos(medicos, termos);
+
 					end;
 
 
@@ -407,29 +416,58 @@ procedure listarPacientes(pacientes:APacientes; termos:string);
 
 
 
-///////////////////////////CADASTRAR CONSULTA
-
-
-function getPacienteByName(pacientes:APacientes; termos:string):pessoa;
-	var
-		p:pessoa;
-		i:integer;
-		begin
-
-		end;
-
-function getMedicoByName(medicos:AMedicos;termos:string):pessoa;
-	var
-		p:pessoa;
-		i:integer;
-		begin
-
-		end;
-
-
 procedure cadastrarConsulta(var pessoas:APessoas; var pacientes:APacientes; var medicos:AMedicos; var consultas:AConsultas);
+	var
+		count:integer;
+		decisao:integer;
+		i:integer;
+		encontrado:boolean;
 	begin
+	ClrScr;
+	encontrado:=false;
+		repeat
+		count := listarPacientes(pacientes, '', false);
+	if(count < 1) then
+		begin
+		if(count = 0) then
+			begin
+				desenhar('-','-','-', false);
+				desenhar(' 0 Pacientes cadastrados ','-',' ', true);
+				desenhar(' Escolha uma opcao abaixo ','-',' ', true);
+				desenhar('-','-','-', false);
+				desenhar('-','-','-', false);
+				desenhar(' 1) Cadastrar Paciente ','-',' ', true);
+				desenhar(' 2) Sair ','-',' ', true);
+				desenhar('-','-','-', false);
+				readln(decisao);
+				end;
+				
+				if(decisao = 1) then
+					begin
+						cadastrarPaciente(pacientes);
+				end;
+		end;
+	//writeln('Digite o ID de algum paciente: ');
+	// readkey;
+	until ((count > 0) or (decisao = 2));
 
+	ClrScr;
+	repeat
+	listarPacientes(pacientes, '', true);
+	desenhar('Digite o id do paciente ou', '-', ' ', true);
+	desenhar('Digite 0 para SAIR', '-', ' ', true);
+	readln(decisao);
+	if(decisao > 0) then
+		begin
+			for i := 1 to 100 do
+				begin
+					if(pacientes[i].pessoa.id = decisao) then
+						begin
+						encontrado := true;
+						end;
+				end;
+		end;
+	until((decisao = 0) or (encontrado));
 	end;
 
 
@@ -442,9 +480,11 @@ procedure mostrarMenu(var pessoas:APessoas; var pacientes:APacientes; var medico
 		menu_validado:boolean;
 		menu_temp:char;
 		menu:integer;
+		count:integer;
 
 	begin
 		menu_validado := false;
+		count:=0;
 	repeat
 	ClrScr;
 	cabecalho();
@@ -512,6 +552,7 @@ Case menu_temp of
 
 		'5' : Begin
 			//Marcar Consulta
+			cadastrarConsulta(pessoas,pacientes,medicos,consultas);
 
 			End;
 
@@ -527,7 +568,13 @@ Case menu_temp of
 		'7' : Begin
 			//Listar Pacientes
 			ClrScr;
-			listarPacientes(pacientes, '');
+			count:= listarPacientes(pacientes, '', true);
+			if(count = 0) then
+			begin
+				desenhar('-','-','-', false);
+				desenhar(' 0 Pacientes cadastrados ','-',' ', true);
+				desenhar('-','-','-', false);
+			end;
 				desenhar('-','-','-', false);
 				desenhar(' Pressione enter para voltar ','-',' ', true);
 				desenhar('-','-','-', false);
@@ -579,7 +626,7 @@ End;
 
 BEGIN
 // cabecalho();
-Loading_screen(2,2,1);
+Loading_screen(2,2,0);
 mostrarMenu(pessoas, pacientes, medicos, consultas);
 writeln('');
 END.
