@@ -1,3 +1,9 @@
+{
+Sistema para Consultorios
+Versão: 2.0
+Criadores: Tarcisio Ambrosio, Bruno Vargas, Marcos Gonçalves
+}
+
 Program Pzim ;
 type
 pessoa= record
@@ -446,7 +452,7 @@ INICIALIZADOR
 }
 
 Begin
-  carregando(2,2,100,'Carregando Programa'); //aparecer o carregando...
+  carregando(2,2,1000,'Carregando Programa'); //aparecer o carregando...
   repeat
     menu_principal := '0';
     clrscr;
@@ -510,7 +516,14 @@ Begin
       
       '0': BEGIN
         clrscr;
-        carregando(2,2,100,'Fechando Programa');
+
+        carregando(2,2,500,'Salvando Pacientes');
+        carregando(2,3,500,'Salvando Médicos');
+        carregando(2,4,500,'Salvando Consultas');				        
+        carregando(2,5,500,'Fechando....');  
+        writeln('');
+				writeln('Aperte qualquer tecla para fechar esta janela');
+				readkey;   
       END;
     END;
     
