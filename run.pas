@@ -1,6 +1,6 @@
 program clinica;
 
-uses crt,sysutils;
+uses crt, SysUtils;
 
 type
 	pessoa= record
@@ -56,34 +56,34 @@ var
 	i:integer;
 
 begin
-	total:=40;
-	sobra:=total-length(texto);
-	write(laterais);
-	//writeln('Tota; ', total, 'textoL: ', length(texto), ' sobra: ', sobra);
-	if(alinhado) then
-	begin
-		sobra:= sobra+1;
-		for i:=0 to sobra do
-			begin
-			if(i=2) then
-			write(texto)
-			else
-			write(preenchimento);
-			end;
-	end
-	else
-		begin
-		for i:= 0 to sobra do
-			begin
-				if(i = (sobra DIV 2)) then
-				begin
-					write(texto);
-				end;
-				write(preenchimento);
-			end;
-		end;
-	
-	writeln(laterais);
+//	total:=40;
+//	sobra:=total-length(texto);
+//	write(laterais);
+//	//writeln('Tota; ', total, 'textoL: ', length(texto), ' sobra: ', sobra);
+//	if(alinhado) then
+//	begin
+//		sobra:= sobra+1;
+//		for i:=0 to sobra do
+//			begin
+//			if(i=2) then
+//			write(texto)
+//			else
+//			write(preenchimento);
+//			end;
+//	end
+//	else
+//		begin
+//		for i:= 0 to sobra do
+//			begin
+//				if(i = (sobra DIV 2)) then
+//				begin
+//					write(texto);
+//				end;
+//				write(preenchimento);
+//			end;
+//		end;
+//	
+//	writeln(laterais);
 end;
 
 
