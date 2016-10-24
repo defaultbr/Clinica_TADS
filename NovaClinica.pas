@@ -50,6 +50,7 @@ termos:string;
 p:paciente;
 m:medico;
 c:consulta;
+delay_em_milisegundos:integer;
 
 
 
@@ -285,9 +286,8 @@ end;
 
 
 
-
 {
-Consultar Paciente
+Consultar Médico
 }
 
 function getMedicoByTermos(medicos:AMedicos;termos:string):medico;
@@ -354,6 +354,47 @@ begin
   readkey;
 end;
 end;
+
+
+{
+Editar Paciente
+}
+
+procedure editarPaciente(pacientes:APacientes); 
+var
+last_index:integer;
+continua:string;
+termos:string;
+p:paciente;
+begin
+
+ last_index:= 0;
+  writeln('Primeiro Selecione um Paciente já cadastrado');
+  repeat
+    write('Localizar paciente por nome/CPF: ');
+    readln(termos);
+    if(termos = '') then
+    writeln('Digite ao menos 1 caractere para efetuar a busca');
+  until termos <> '';
+  p:= getPacienteByTermos(pacientes,termos);
+	if(p.pessoa.nome <> '') then
+	begin
+	writeln('Selecionado');
+	end
+	else
+	begin
+	writeln('não selecionado');
+	end;
+	
+	readkey;
+end;
+
+
+
+{
+Editar Médico
+}
+
 
 
 
@@ -452,7 +493,8 @@ INICIALIZADOR
 }
 
 Begin
-  carregando(2,2,1000,'Carregando Programa'); //aparecer o carregando...
+	delay_em_milisegundos :=  0;
+  carregando(2,2,delay_em_milisegundos,'Carregando Programa'); //aparecer o carregando...
   repeat
     menu_principal := '0';
     clrscr;
@@ -461,12 +503,14 @@ Begin
     writeln('2) Cadastrar Médico');
     writeln('3) Buscar Paciente');
     writeln('4) Buscar Médico');
-    writeln('5) Cadastrar Consulta');
-    writeln('6) Listar Consultas');
+    writeln('5) Editar Paciente');
+    writeln('6) Editar Médico');
+    writeln('7) Cadastrar Consulta');
+    writeln('8) Listar Consultas');
     writeln('-----------------------------');
     writeln('0) SAIR DO PROGRAMA');
     writeln('-----------------------------');
-    write('Menu Selecionado(0 até 6): ');
+    write('Menu Selecionado(0 até 8): ');
     readln(menu_principal);
     
     
@@ -503,13 +547,24 @@ Begin
         m:=getMedicoByTermos(medicos, termos);
       END;
       
-      '5' : BEGIN
+      '5': BEGIN
+          clrscr;
+          editarPaciente(pacientes);
+          
+      END;
+      
+      '6': BEGIN
+          clrscr;
+          
+      END;      
+      
+      '7' : BEGIN
         clrscr;
         CadastrarConsulta(pacientes, medicos, consultas);
         
       END;
       
-      '6' : BEGIN
+      '8' : BEGIN
         clrscr;
         ListarConsultas(consultas);
       END;
@@ -517,10 +572,10 @@ Begin
       '0': BEGIN
         clrscr;
 
-        carregando(2,2,500,'Salvando Pacientes');
-        carregando(2,3,500,'Salvando Médicos');
-        carregando(2,4,500,'Salvando Consultas');				        
-        carregando(2,5,500,'Fechando....');  
+        carregando(2,2,delay_em_milisegundos,'Salvando Pacientes');
+        carregando(2,3,delay_em_milisegundos,'Salvando Médicos');
+        carregando(2,4,delay_em_milisegundos,'Salvando Consultas');				        
+        carregando(2,5,delay_em_milisegundos,'Fechando....');  
         writeln('');
 				writeln('Aperte qualquer tecla para fechar esta janela');
 				readkey;   
