@@ -138,6 +138,120 @@ end;
 
 
 
+function pesquisarMedico(var db:db_medicos):type_medico;
+var
+	medico:type_medico;
+	termos:string;
+	count:integer;
+	position:integer;
+begin
+	clrscr;
+	position:=0;
+	count:=0;
+	writeln(draw,' Digite os termos para localizar o médico (nome/cpf ou crm) e  pressione enter',draw);
+	writeln('');
+	write('Termos: ');              	
+	readln(termos);
+	
+	reset(db);
+	while not eof(db) do
+	begin
+		read(db,medico);
+		if((pos(termos,medico.nome)>0)		or (pos(termos,medico.cpf)>0)		or (pos(termos,medico.crm)>0)) then
+			count:=count+1;
+	end;		
+	close(db);	
+	if(count >0) then    
+	begin
+	reset(db);
+	while not eof(db) do
+	begin
+		clrscr;
+		read(db,medico);	
+		if((pos(termos,medico.nome)>0)		or (pos(termos,medico.cpf)>0)		or (pos(termos,medico.crm)>0)) then		
+		begin
+		position:=position+1;
+		writeln('--> Médico localizado [',position,'/',count,']');
+		write('Nome: '); writeln(medico.nome);
+		write('CPF: '); writeln(medico.cpf);
+		write('CRM: '); writeln(medico.crm);
+		write('Telefone: '); writeln(medico.telefone);
+		write('Endereço: '); writeln(medico.endereco);
+		write('Salário: '); writeln(medico.salario);
+		writeln('');
+		writeln('Aperte ESPAÇO para o próximo: ');
+		readkey;
+		end;
+	end;	        
+	close(db);
+	end
+	ELSE
+	writeln('Não foi encontrado nenhum resultado por estes termos');
+	writeln('Pressione qualquer tecla para retornar ao menu principal');
+	readkey;
+	pesquisarMedico:=medico;
+end;
+
+
+function selecionarMedico(var db:db_medicos):type_medico;
+var
+	medico:type_medico;
+	medico_aux:type_medico;
+	termos:string;
+	count:integer;
+	position:integer;
+	choice:char;
+begin
+	clrscr;
+	position:=0;
+	count:=0;
+	writeln(draw,' Digite os termos para localizar o médico (nome/cpf ou crm) e  pressione enter',draw);
+	writeln('');
+	write('Termos: ');              	
+	readln(termos);
+	
+	reset(db);
+	while not eof(db) do
+	begin
+		read(db,medico);
+		if((pos(termos,medico.nome)>0)		or (pos(termos,medico.cpf)>0)		or (pos(termos,medico.crm)>0)) then
+			count:=count+1;
+	end;		
+	close(db);	
+	if(count >0) then    
+	begin
+	reset(db);
+	while not eof(db) do
+	begin
+		clrscr;
+		read(db,medico);	
+		if((pos(termos,medico.nome)>0)		or (pos(termos,medico.cpf)>0)		or (pos(termos,medico.crm)>0)) then		
+		begin
+		position:=position+1;
+		writeln('--> Médico localizado [',position,'/',count,']');
+		write('Nome: '); writeln(medico.nome);
+		write('CPF: '); writeln(medico.cpf);
+		write('CRM: '); writeln(medico.crm);
+		write('Telefone: '); writeln(medico.telefone);
+		write('Endereço: '); writeln(medico.endereco);
+		write('Salário: '); writeln(medico.salario);
+		writeln('');
+		writeln('Aperte ENTER para selecionar ou ESPAÇO para o próximo: ');
+		choice:= readkey;
+		if(choice = #13) then
+			medico_aux:=medico;
+			break;
+		end;
+	end;	        
+	close(db);
+	end
+	ELSE
+	writeln('Não foi encontrado nenhum resultado por estes termos');
+	writeln('Pressione qualquer tecla para retornar ao menu principal');
+	readkey;
+	selecionarMedico:=medico_aux;
+end;
+
 
 
 	
@@ -145,6 +259,7 @@ end;
 
 Begin	
 	draw:='/\/\/\//\/\/\/\';
+	sub_menu:=999;
 	assign(medicos,'Medicos.dat');
 	assign(pacientes,'Pacientes.dat');
 	assign(consultas,'Consultas.dat');		
@@ -165,7 +280,7 @@ Begin
 	
 	case menu of
 	    1: 
-	    	BEGIN
+	    	BEGIN             
 	    	//Case do submenu para cadastro
 	    	   sub_menu := s_menu('Cadastrar');
 	    	   case sub_menu of
@@ -183,12 +298,27 @@ Begin
 	    	   end;
 	    	END;
 	    3: 
-	    	BEGIN
-	    	   s_menu('Pesquisar');
+	    	BEGIN  
+	    	   sub_menu := s_menu('Pesquisar');
+	    	   case sub_menu of
+	    	   	1: 
+	    	   	BEGIN
+	    	   	pesquisarMedico(medicos);
+	    	   		//selecionarMedico(medicos);
+	    	   	END;
+	    	   	2: 
+	    	   	BEGIN
+	    	   	//	cadastrarPaciente(pacientes);	    	   	
+	    	   	END;
+	    	   	3: 
+	    	   	BEGIN
+	    	   	
+	    	   	END;
+					END;	    	   		    	   
 	    	END;
 	    5: 
 	    	BEGIN
-	    	   s_menu('Alterar');
+	    	   sub_menu := s_menu('Alterar');
 	    	END;								    	
 	end;
 		
