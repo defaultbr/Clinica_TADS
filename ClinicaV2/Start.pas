@@ -254,9 +254,11 @@ begin
 	close(db);
 	end
 	ELSE
+	begin
 	writeln('Não foi encontrado nenhum resultado por estes termos');
 	writeln('Pressione qualquer tecla para retornar ao menu principal');
 	readkey;
+	end;
 	selecionarMedico:=medico_aux;
 end;
 
@@ -310,7 +312,8 @@ begin
 		if(choice = #13) then  
 		begin
 		reset(db);
-		seek(db, medico.position);
+		seek(db, medico.position-1);
+		
 		write(db,medico);
 		close(db);	
 		end;		
