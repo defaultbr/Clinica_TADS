@@ -1,6 +1,5 @@
 Program Pzim ;
 
-
 type
 	type_medico = record
 	nome:string;
@@ -9,6 +8,7 @@ type
 	telefone:string;
 	endereco:string;
 	salario:real;
+	position:integer;
 end;
 
 	type_paciente = record
@@ -16,7 +16,8 @@ end;
 	cpf:string;
 	observacoes:string;
 	telefone:string;
-	endereco:string
+	endereco:string ;
+		position:integer;
 end;
 
 	type_consulta = record
@@ -24,6 +25,7 @@ end;
 	valor:real;
 	medico:type_medico;
 	paciente:type_paciente;
+		position:integer;
 end;
 
 db_medicos = file of type_medico;
@@ -31,7 +33,7 @@ db_pacientes = file of type_paciente;
 db_consultas = file of type_consulta;
 
 
-//Variaveis globais, colocar todos os métodos acima
+//Variaveis globais, colocar todos os métodos abaixo
 var
 	medicos:db_medicos;
 	pacientes:db_pacientes;
@@ -39,7 +41,8 @@ var
 	menu:integer;
 	sub_menu:integer;
 	draw:string;
-
+	medico:type_medico;
+	
 
 
 
@@ -89,6 +92,7 @@ begin
 	s_menu := option;
 end;
 
+//---------------===============================----------------=========================-----------------------------------
 
 { 
  Menu de cadastro de médico
@@ -205,11 +209,12 @@ begin
 	clrscr;
 	position:=0;
 	count:=0;
+	medico_aux.nome := 'NULL';
 	writeln(draw,' Digite os termos para localizar o médico (nome/cpf ou crm) e  pressione enter',draw);
 	writeln('');
 	write('Termos: ');              	
 	readln(termos);
-	
+	            
 	reset(db);
 	while not eof(db) do
 	begin
@@ -239,8 +244,11 @@ begin
 		writeln('Aperte ENTER para selecionar ou ESPAÇO para o próximo: ');
 		choice:= readkey;
 		if(choice = #13) then
+			begin  
+			medico.position:= FILEPOS(db);
 			medico_aux:=medico;
 			break;
+			end;
 		end;
 	end;	        
 	close(db);
@@ -253,7 +261,63 @@ begin
 end;
 
 
+procedure listarMedicos(var db:db_medicos);
+var
+	medico:type_medico;
+begin
+	clrscr;
+	reset(db);
+	while not eof(db) do
+	begin
+		read(db,medico);		
+		write('----');
+		write('Nome: '); writeln(medico.nome);
+		write('CPF: '); writeln(medico.cpf);
+		write('CRM: '); writeln(medico.crm);
+		write('Telefone: '); writeln(medico.telefone);
+		write('Endereço: '); writeln(medico.endereco);
+		write('Salário: '); writeln(medico.salario);
+		writeln('');
+	end;	        
+	close(db);
+	readkey;
+end;
 
+
+
+procedure alterarMedico(var db:db_medicos;medico:type_medico);
+var
+	choice:char;
+begin
+	clrscr;
+		writeln('--> Dados Atuais');
+		write('Nome: '); writeln(medico.nome);
+		write('CPF: '); writeln(medico.cpf);
+		write('CRM: '); writeln(medico.crm);
+		write('Telefone: '); writeln(medico.telefone);
+		write('Endereço: '); writeln(medico.endereco);
+		write('Salário: '); writeln(medico.salario);
+		writeln('');
+		writeln('--> Novos Dados');
+		write('Nome: '); readln(medico.nome);
+		write('CPF: '); readln(medico.cpf);
+		write('CRM: '); readln(medico.crm);
+		write('Telefone: '); readln(medico.telefone);
+		write('Endereço: '); readln(medico.endereco);
+		write('Salário: '); readln(medico.salario);		
+		writeln('Aperte ENTER para CONFIRMAR ou ESC para cancelar ');		
+		choice:= readkey;
+		if(choice = #13) then  
+		begin
+		reset(db);
+		seek(db, medico.position);
+		write(db,medico);
+		close(db);	
+		end;		
+end;
+
+
+//---------------===============================----------------=========================-----------------------------------
 	
 	
 
@@ -269,6 +333,7 @@ Begin
 	clrscr;
 	writeln('1 - Cadastrar');
 	writeln('3 - Pesquisar');
+	writeln('4 - Listar');
 	writeln('5 - Alterar');
 	writeln('7 - Deletar');
 	writeln('9 - Cancelar Consulta');
@@ -316,9 +381,44 @@ Begin
 	    	   	END;
 					END;	    	   		    	   
 	    	END;
+	    	
+	    4: 
+	    	BEGIN
+	    	   sub_menu := s_menu('Listar');					 	    	
+	    	    case sub_menu of
+	    	   	1: 
+	    	   	BEGIN
+	    	   	listarMedicos(medicos);
+	    	   		//selecionarMedico(medicos);
+	    	   	END;
+	    	   	2: 
+	    	   	BEGIN
+	    	   	//	cadastrarPaciente(pacientes);	    	   	
+	    	   	END;
+	    	   	3: 
+	    	   	BEGIN
+	    	   	
+	    	   	END;
+					END;	    	   		
+	    	END;
 	    5: 
 	    	BEGIN
 	    	   sub_menu := s_menu('Alterar');
+					 case sub_menu of
+	    	   	1: 
+	    	   	BEGIN
+	    	   		medico:=selecionarMedico(medicos);
+	    	   		if(medico.nome <> 'NULL') then
+		    	   	alterarMedico(medicos,medico);
+	    	   	END;
+	    	   	2: 
+	    	   	BEGIN   	   	
+	    	   	END;
+	    	   	3: 
+	    	   	BEGIN
+	    	   	
+	    	   	END;
+					END;	    	   			    	   
 	    	END;								    	
 	end;
 		
