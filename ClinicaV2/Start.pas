@@ -95,8 +95,12 @@ begin
 end;
 
 
-//---------------===============================----------------=========================-----------------------------------
 
+
+
+
+
+//---------------===============================----------------=========================-----------------------------------
 { 
  Menu de cadastro de paciente
 }
@@ -505,6 +509,80 @@ begin
 		end;		
 end;
 
+//---------------===============================----------------=========================-----------------------------------
+{ 
+ Menu de cadastro de paciente
+}
+
+procedure cadastrarConsulta(var medicos:db_medicos;var pacientes:db_pacientes;var db:db_consultas);
+var
+	consulta:type_consulta;
+	paciente:type_paciente;
+	medico:type_medico;
+	data:string;
+	valor:real;	
+	choice:char;
+begin
+clrscr;
+	writeln(draw,' Agendamento de consultas ',draw);
+	writeln('Primeiro você deve selecionar um paciente, pressione ENTER para pesquisar');
+	readkey;
+	paciente := selecionarPaciente(pacientes);
+	if(paciente.nome <> 'NULL') then
+	begin 
+		clrscr;	
+		writeln('Agora você deve selecionar um médico responsável');
+		readkey;
+		medico:=selecionarMedico(medicos);
+			if(medico.nome <> 'NULL') then
+			begin
+				clrscr;
+				write('Digite a data da consulta: ');
+				readln(data);
+				write('Digite o valor da consulta: ');
+				readln(valor);
+				consulta.data := data;
+				consulta.valor := valor;
+				consulta.medico := medico;
+				consulta.paciente := paciente;
+				clrscr;
+				writeln('---------------------------------------');
+				writeln('Agendamento de Consulta');
+				writeln('---------------------------------------');
+				writeln('Paciente: ',paciente.nome);
+				writeln('Médico: ', medico.nome);
+				writeln('Data: ', data);
+				writeln('Valor: ', valor:2:2);
+				writeln('---------------------------------------');
+				writeln('');
+				writeln('Pressione ENTER para confirmar o agendamento ou ESC para cancelar');
+				choice:= readkey;
+				if(choice = #13) then  
+				begin
+				append(db);
+			
+				write(db,consulta);
+				close(db);	
+				end;							
+			end
+			ELSE
+			begin
+				writeln('Nenhum médico selecionado, pressione qualquer tecla para retornar à tela principal');			
+			end;
+	end
+	ELSE
+	begin
+	writeln('Nenhum paciente selecionado, pressione qualquer tecla para retornar à tela principal');
+	readkey;
+	end;
+	
+//	append(db);
+//	write(db,paciente);	
+//	close(db);	
+//	writeln('');
+//	writeln('Médico cadastrado com sucesso, aperte qualquer tecla para retornar');
+//	readkey;	
+end;
 
 //---------------===============================----------------=========================-----------------------------------
 	
@@ -546,6 +624,7 @@ Begin
 	    	   	END;
 	    	   	3: 
 	    	   	BEGIN
+	    	   		cadastrarConsulta(medicos,pacientes,consultas);
 	    	   	END;	    	   	
 	    	   end;
 	    	END;
