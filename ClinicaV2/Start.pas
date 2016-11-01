@@ -104,78 +104,18 @@ end;
 { 
  Menu de cadastro de paciente
 }
-procedure cadastrarPaciente(var db:db_pacientes);
+function cadastrarPaciente():type_paciente;
 var
 	paciente:type_paciente;
 begin
-	clrscr;
-	writeln(draw,' Digite os dados do paciente ',draw);
+
 	write('Nome: '); readln(paciente.nome);
 	write('CPF: '); readln(paciente.cpf);
 	write('Convênio: '); readln(paciente.convenio);
 	write('Telefone: '); readln(paciente.telefone);
-	write('Endereço: '); readln(paciente.endereco);
+	write('Endereço: '); readln(paciente.endereco);                                               
 	write('Observações: '); readln(paciente.observacoes);	
-	append(db);
-	write(db,paciente);	
-	close(db);	
-	writeln('');
-	writeln('Médico cadastrado com sucesso, aperte qualquer tecla para retornar');
-	readkey;
-end;
-
-function pesquisarPaciente(var db:db_pacientes):type_paciente;
-var
-	paciente:type_paciente;
-	termos:string;
-	count:integer;
-	position:integer;
-begin
-	clrscr;
-	position:=0;
-	count:=0;
-	writeln(draw,' Digite os termos para localizar o paciente (nome/cpf) e  pressione enter',draw);
-	writeln('');
-	write('Termos: ');              	
-	readln(termos);
-	
-	reset(db);
-	while not eof(db) do
-	begin
-		read(db,paciente);
-		if((pos(termos,paciente.nome)>0)		or (pos(termos,paciente.cpf)>0)) then
-			count:=count+1;
-	end;		
-	close(db);	
-	if(count >0) then    
-	begin
-	reset(db);
-	while not eof(db) do
-	begin
-		clrscr;
-		read(db,paciente);	
-		if((pos(termos,paciente.nome)>0)		or (pos(termos,paciente.cpf)>0)) then		
-		begin
-		position:=position+1;
-		writeln('--> Paciênte localizado [',position,'/',count,']');
-		write('Nome: '); writeln(paciente.nome);
-		write('CPF: '); writeln(paciente.cpf);
-		write('Convênio: '); writeln(paciente.convenio);
-		write('Telefone: '); writeln(paciente.telefone);
-		write('Endereço: '); writeln(paciente.endereco);
-		write('Observações: '); writeln(paciente.observacoes);
-		writeln('');
-		writeln('Aperte ESPAÇO para o próximo: ');
-		readkey;
-		end;
-	end;	        
-	close(db);
-	end
-	ELSE
-	writeln('Não foi encontrado nenhum resultado por estes termos');
-	writeln('Pressione qualquer tecla para retornar ao menu principal');
-	readkey;
-	pesquisarPaciente:=paciente;
+	cadastrarPaciente:=paciente;
 end;
 
 function selecionarPaciente(var db:db_pacientes):type_paciente;
@@ -214,7 +154,7 @@ begin
 		if((pos(termos,paciente.nome)>0)		or (pos(termos,paciente.cpf)>0)) then		
 		begin
 		position:=position+1;
-		writeln('--> Médico localizado [',position,'/',count,']');
+		writeln('--> Paciente localizado [',position,'/',count,']');
 		write('Nome: '); writeln(paciente.nome);
 		write('CPF: '); writeln(paciente.cpf);
 		write('Convênio: '); writeln(paciente.convenio);
@@ -222,7 +162,7 @@ begin
 		write('Endereço: '); writeln(paciente.endereco);
 		write('Observações: '); writeln(paciente.observacoes);
 		writeln('');
-		writeln('Aperte ENTER para selecionar ou ESPAÇO para o próximo: ');
+		writeln('Aperte ENTER para confirmar ou ESPAÇO para o próximo: ');
 		choice:= readkey;
 		if(choice = #13) then
 			begin  
@@ -269,39 +209,6 @@ end;
 
 
 
-procedure alterarMedico(var db:db_medicos;medico:type_medico);
-var
-	choice:char;
-begin
-	clrscr;
-		writeln('--> Dados Atuais');
-		write('Nome: '); writeln(medico.nome);
-		write('CPF: '); writeln(medico.cpf);
-		write('CRM: '); writeln(medico.crm);
-		write('Telefone: '); writeln(medico.telefone);
-		write('Endereço: '); writeln(medico.endereco);
-		write('Salário: '); writeln(medico.salario);
-		writeln('');
-		writeln('--> Novos Dados');
-		write('Nome: '); readln(medico.nome);
-		write('CPF: '); readln(medico.cpf);
-		write('CRM: '); readln(medico.crm);
-		write('Telefone: '); readln(medico.telefone);
-		write('Endereço: '); readln(medico.endereco);
-		write('Salário: '); readln(medico.salario);		
-		writeln('Aperte ENTER para CONFIRMAR ou ESC para cancelar ');		
-		choice:= readkey;
-		if(choice = #13) then  
-		begin
-		reset(db);
-		seek(db, medico.position-1);
-		
-		write(db,medico);
-		close(db);	
-		end;		
-end;
-
-
 
 
 
@@ -315,8 +222,6 @@ procedure cadastrarMedico(var db:db_medicos);
 var
 	medico:type_medico;
 begin
-	clrscr;
-	writeln(draw,' Digite os dados do médico ',draw);
 	write('Nome: '); readln(medico.nome);
 	write('CPF: '); readln(medico.cpf);
 	write('CRM: '); readln(medico.crm);
@@ -330,61 +235,6 @@ begin
 	writeln('Médico cadastrado com sucesso, aperte qualquer tecla para retornar');
 	readkey;
 end;
-
-function pesquisarMedico(var db:db_medicos):type_medico;
-var
-	medico:type_medico;
-	termos:string;
-	count:integer;
-	position:integer;
-begin
-	clrscr;
-	position:=0;
-	count:=0;
-	writeln(draw,' Digite os termos para localizar o médico (nome/cpf ou crm) e  pressione enter',draw);
-	writeln('');
-	write('Termos: ');              	
-	readln(termos);
-	
-	reset(db);
-	while not eof(db) do
-	begin
-		read(db,medico);
-		if((pos(termos,medico.nome)>0)		or (pos(termos,medico.cpf)>0)		or (pos(termos,medico.crm)>0)) then
-			count:=count+1;
-	end;		
-	close(db);	
-	if(count >0) then    
-	begin
-	reset(db);
-	while not eof(db) do
-	begin
-		clrscr;
-		read(db,medico);	
-		if((pos(termos,medico.nome)>0)		or (pos(termos,medico.cpf)>0)		or (pos(termos,medico.crm)>0)) then		
-		begin
-		position:=position+1;
-		writeln('--> Médico localizado [',position,'/',count,']');
-		write('Nome: '); writeln(medico.nome);
-		write('CPF: '); writeln(medico.cpf);
-		write('CRM: '); writeln(medico.crm);
-		write('Telefone: '); writeln(medico.telefone);
-		write('Endereço: '); writeln(medico.endereco);
-		write('Salário: '); writeln(medico.salario);
-		writeln('');
-		writeln('Aperte ESPAÇO para o próximo: ');
-		readkey;
-		end;
-	end;	        
-	close(db);
-	end
-	ELSE
-	writeln('Não foi encontrado nenhum resultado por estes termos');
-	writeln('Pressione qualquer tecla para retornar ao menu principal');
-	readkey;
-	pesquisarMedico:=medico;
-end;
-
 
 function selecionarMedico(var db:db_medicos):type_medico;
 var
@@ -430,7 +280,7 @@ begin
 		write('Endereço: '); writeln(medico.endereco);
 		write('Salário: '); writeln(medico.salario);
 		writeln('');
-		writeln('Aperte ENTER para selecionar ou ESPAÇO para o próximo: ');
+		writeln('Aperte ENTER para confirmar ou ESPAÇO para o próximo: ');
 		choice:= readkey;
 		if(choice = #13) then
 			begin  
@@ -449,6 +299,41 @@ begin
 	readkey;
 	end;
 	selecionarMedico:=medico_aux;
+end;
+
+procedure alterarMedico(var db:db_medicos);
+var
+	choice:char;
+begin
+		medico:=selecionarMedico(medicos);
+		clrscr;
+		if(medico.nome <> 'NULL') then
+		begin		
+		writeln('--> Dados Atuais');
+		write('Nome: '); writeln(medico.nome);
+		write('CPF: '); writeln(medico.cpf);
+		write('CRM: '); writeln(medico.crm);
+		write('Telefone: '); writeln(medico.telefone);
+		write('Endereço: '); writeln(medico.endereco);
+		write('Salário: '); writeln(medico.salario);
+		writeln('');
+		writeln('--> Novos Dados');
+		write('Nome: '); readln(medico.nome);
+		write('CPF: '); readln(medico.cpf);
+		write('CRM: '); readln(medico.crm);
+		write('Telefone: '); readln(medico.telefone);
+		write('Endereço: '); readln(medico.endereco);
+		write('Salário: '); readln(medico.salario);		
+		writeln('Aperte ENTER para CONFIRMAR ou ESC para cancelar ');		
+		choice:= readkey;
+		if(choice = #13) then  
+		begin
+		reset(db);
+		seek(db, medico.position-1);	
+		write(db,medico);
+		close(db);
+		end;	
+		end;		
 end;
 
 
@@ -477,11 +362,13 @@ end;
 
 
 
-procedure alterarPaciente(var db:db_pacientes;paciente:type_paciente);
+procedure alterarPaciente(var db:db_pacientes);
 var
 	choice:char;
 begin
-	clrscr;
+
+		paciente:=selecionarPaciente(db);
+		clrscr;
 		writeln('--> Dados Atuais');
 		write('Nome: '); writeln(paciente.nome);
 		write('CPF: '); writeln(paciente.cpf);
@@ -496,25 +383,25 @@ begin
 		write('Convênio: '); readln(paciente.convenio);
 		write('Telefone: '); readln(paciente.telefone);
 		write('Endereço: '); readln(paciente.endereco);
-		write('Observações: '); readln(paciente.observacoes);		
+		write('Observações: '); readln(paciente.observacoes);
 		writeln('Aperte ENTER para CONFIRMAR ou ESC para cancelar ');		
 		choice:= readkey;
 		if(choice = #13) then  
 		begin
 		reset(db);
-		seek(db, paciente.position-1);
-		
+		seek(db, paciente.position-1);	
 		write(db,paciente);
 		close(db);	
-		end;		
+		end;
+				
 end;
 
 //---------------===============================----------------=========================-----------------------------------
 { 
- Menu de cadastro de paciente
+ Menu de Consultas
 }
 
-procedure cadastrarConsulta(var medicos:db_medicos;var pacientes:db_pacientes;var db:db_consultas);
+function cadastrarConsulta(var medicos:db_medicos;var pacientes:db_pacientes;var db:db_consultas):type_consulta;
 var
 	consulta:type_consulta;
 	paciente:type_paciente;
@@ -559,8 +446,7 @@ clrscr;
 				choice:= readkey;
 				if(choice = #13) then  
 				begin
-				append(db);
-			
+				append(db);	
 				write(db,consulta);
 				close(db);	
 				end;							
@@ -574,15 +460,147 @@ clrscr;
 	begin
 	writeln('Nenhum paciente selecionado, pressione qualquer tecla para retornar à tela principal');
 	readkey;
-	end;
-	
-//	append(db);
-//	write(db,paciente);	
-//	close(db);	
-//	writeln('');
-//	writeln('Médico cadastrado com sucesso, aperte qualquer tecla para retornar');
-//	readkey;	
+	end;	
+	cadastrarConsulta:=consulta;
 end;
+
+procedure listarConsultas(var db:db_consultas);
+var
+	consulta:type_consulta;
+begin
+	clrscr;
+	reset(db);
+	while not eof(db) do
+	begin
+		read(db,consulta);		
+		writeln('--> Consulta localizada');
+		write('Paciente: '); writeln(consulta.paciente.nome);
+		write('Médico: '); writeln(consulta.medico.nome);
+		write('Data: '); writeln(consulta.data);
+		write('Valor: '); writeln(consulta.valor:2:2);
+		writeln('');
+	end;	        
+	close(db);
+	writeln('Pressione qualquer tecla para retornar ao menu principal');
+	readkey;
+end;
+
+
+function selecionarConsulta(var db:db_consultas):type_consulta;
+var
+	consulta:type_consulta;
+	consulta_aux:type_consulta;
+	termos:string;
+	count:integer;
+	position:integer;
+	choice:char;
+begin
+	clrscr;
+	position:=0;
+	count:=0;
+	writeln(draw,' Digite os termos para localizar a consulta nome,cpf, crm do médico ou paciente ou a data e pressione enter',draw);
+	writeln('');
+	write('Termos: ');              	
+	readln(termos);
+	
+	reset(db);
+	while not eof(db) do
+	begin
+		read(db,consulta);
+		if((
+		
+		pos(termos,consulta.paciente.nome)>0)
+		or (pos(termos,consulta.medico.nome)>0)				
+		or (pos(termos,consulta.medico.cpf)>0)		
+		or (pos(termos,consulta.paciente.cpf)>0)
+		or (pos(termos,consulta.medico.cpf)>0)		
+		or (pos(termos,consulta.medico.crm)>0)		
+		or (pos(termos,consulta.data)>0)			
+		
+		) then
+			count:=count+1;
+	end;		
+	close(db);	
+	if(count >0) then    
+	begin
+	reset(db);
+	while not eof(db) do
+	begin
+		clrscr;
+		read(db,consulta);	
+		if((
+		
+		pos(termos,consulta.paciente.nome)>0)
+		or (pos(termos,consulta.medico.nome)>0)				
+		or (pos(termos,consulta.medico.cpf)>0)		
+		or (pos(termos,consulta.paciente.cpf)>0)
+		or (pos(termos,consulta.medico.cpf)>0)		
+		or (pos(termos,consulta.medico.crm)>0)		
+		or (pos(termos,consulta.data)>0)				
+		) then		
+		begin
+		position:=position+1;
+		writeln('--> Consulta');
+		write('Paciente: '); writeln(consulta.paciente.nome);
+		write('Médico: '); writeln(consulta.medico.nome);
+		write('Data: '); writeln(consulta.data);
+		write('Valor: '); writeln(consulta.valor:2:2);
+		writeln('');
+		writeln('Aperte ENTER para confirmar ou espaço para o próximo: ');
+		choice:= readkey;
+		if(choice = #13) then
+			begin  
+			consulta.position:= FILEPOS(db);
+			consulta_aux:=consulta;
+			break;
+			end;
+		end;
+	end;	        
+	close(db);
+	end
+	ELSE
+	writeln('Não foi encontrado nenhum resultado por estes termos');
+	writeln('Pressione qualquer tecla para retornar ao menu principal');
+	readkey;
+	selecionarConsulta:=consulta_aux;
+end;
+
+
+
+procedure alterarConsulta(var db:db_consultas;var medicos:db_medicos;var pacientes:db_pacientes);
+var
+	choice:char;
+	consulta:type_consulta;
+	temp_position:integer;
+begin
+
+		consulta:=selecionarConsulta(db);
+		if(consulta.paciente.nome <> 'NULL') then
+		begin
+		clrscr;
+		writeln('--> Dados Atuais');
+		write('Paciente: '); writeln(consulta.paciente.nome);
+		write('Médico: '); writeln(consulta.medico.nome);
+		write('Data: '); writeln(consulta.data);
+		write('Valor: '); writeln(consulta.valor:2:2);
+		temp_position:= consulta.position;
+		writeln('');
+		writeln('--> Novos Dados');
+		consulta:=cadastrarConsulta(medicos,pacientes,consultas);
+		consulta.position:=temp_position;
+		writeln('Aperte ENTER para CONFIRMAR ou ESC para cancelar ');		
+		choice:= readkey;
+		if(choice = #13) then  
+		begin
+		reset(db);
+		seek(db, consulta.position-1);	
+		write(db,consulta);
+		close(db);	
+		end;
+		end;
+				
+end;
+
 
 //---------------===============================----------------=========================-----------------------------------
 	
@@ -616,11 +634,21 @@ Begin
 	    	   case sub_menu of
 	    	   	1: 
 	    	   	BEGIN
-	    	   		cadastrarMedico(medicos);
+							clrscr;
+							writeln(draw,' Digite os dados do médico ',draw);	    	   	
+		    	   	cadastrarMedico(medicos);
 	    	   	END;
 	    	   	2: 
 	    	   	BEGIN
-	    	   		cadastrarPaciente(pacientes);	    	   	
+	    	   		clrscr;
+							writeln(draw,' Digite os dados do paciente ',draw);
+	    	   		paciente:= cadastrarPaciente();	
+							append(pacientes);
+							write(pacientes,paciente);	
+							close(pacientes);	
+							writeln('');
+							writeln('Paciente cadastrado com sucesso, aperte qualquer tecla para retornar');
+							readkey;							     	   	
 	    	   	END;
 	    	   	3: 
 	    	   	BEGIN
@@ -634,15 +662,15 @@ Begin
 	    	   case sub_menu of
 	    	   	1: 
 	    	   	BEGIN
-	    	   	pesquisarMedico(medicos);
+	    	   	selecionarMedico(medicos);
 	    	   	END;
 	    	   	2: 
 	    	   	BEGIN
-	    	   	pesquisarPaciente(pacientes);	    	   	
+	    	   	selecionarPaciente(pacientes);	    	   	
 	    	   	END;
 	    	   	3: 
 	    	   	BEGIN
-	    	   	
+	    	   	selecionarConsulta(consultas);
 	    	   	END;
 					END;	    	   		    	   
 	    	END;
@@ -661,7 +689,7 @@ Begin
 	    	   	END;
 	    	   	3: 
 	    	   	BEGIN
-	    	   	
+	    	   	listarConsultas(consultas);
 	    	   	END;
 					END;	    	   		
 	    	END;
@@ -671,33 +699,18 @@ Begin
 					 case sub_menu of
 	    	   	1: 
 	    	   	BEGIN
-	    	   		medico:=selecionarMedico(medicos);
-	    	   		if(medico.nome <> 'NULL') then
-		    	   	alterarMedico(medicos,medico);
+		    	   	alterarMedico(medicos);
 	    	   	END;
 	    	   	2: 
 	    	   	BEGIN
-						 paciente:=selecionarPaciente(pacientes);
-	    	   		if(paciente.nome <> 'NULL') then
-		    	   	alterarPaciente(pacientes,paciente);						    	   	
+		    	   	alterarPaciente(pacientes);						    	   	
 	    	   	END;
 	    	   	3: 
 	    	   	BEGIN
-	    	   	
+	    	   		alterarConsulta(consultas,medicos,pacientes);
 	    	   	END;
 					END;	    	   			    	   
 	    	END;								    	
-	end;
-		
-	until(menu = 0);	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+	end;	
+	until(menu = 0);			
 End.
