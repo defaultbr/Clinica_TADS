@@ -1,3 +1,9 @@
+{ 
+ Clinica V2.0
+ Tarcisio, Marcos e Bruno
+
+}
+
 Program Pzim ;
 
 type
@@ -9,6 +15,7 @@ type
 	endereco:string;
 	salario:real;
 	position:integer;
+	ativo:integer;
 end;
 
 	type_paciente = record
@@ -19,6 +26,7 @@ end;
 	telefone:string;
 	endereco:string ;
 		position:integer;
+		ativo:integer;
 end;
 
 	type_consulta = record
@@ -27,6 +35,7 @@ end;
 	medico:type_medico;
 	paciente:type_paciente;
 	position:integer;
+	ativo:integer;
 end;
 
 db_medicos = file of type_medico;
@@ -114,7 +123,8 @@ begin
 	write('Convênio: '); readln(paciente.convenio);
 	write('Telefone: '); readln(paciente.telefone);
 	write('Endereço: '); readln(paciente.endereco);                                               
-	write('Observações: '); readln(paciente.observacoes);	
+	write('Observações: '); readln(paciente.observacoes);
+	paciente.ativo:=1;	
 	cadastrarPaciente:=paciente;
 end;
 
@@ -140,7 +150,7 @@ begin
 	while not eof(db) do
 	begin
 		read(db,paciente);
-		if((pos(termos,paciente.nome)>0)		or (pos(termos,paciente.cpf)>0)) then
+		if((paciente.ativo = 1) and    ((pos(termos,paciente.nome)>0)		or (pos(termos,paciente.cpf)>0))) then
 			count:=count+1;
 	end;		
 	close(db);	
@@ -151,7 +161,7 @@ begin
 	begin
 		clrscr;
 		read(db,paciente);	
-		if((pos(termos,paciente.nome)>0)		or (pos(termos,paciente.cpf)>0)) then		
+		if((paciente.ativo = 1) and    ((pos(termos,paciente.nome)>0)		or (pos(termos,paciente.cpf)>0))) then		
 		begin
 		position:=position+1;
 		writeln('--> Paciente localizado [',position,'/',count,']');
@@ -192,7 +202,9 @@ begin
 	reset(db);
 	while not eof(db) do
 	begin
-		read(db,medico);		
+		read(db,medico);
+		if(medico.ativo = 1) then
+		begin		
 		write('----');
 		write('Nome: '); writeln(medico.nome);
 		write('CPF: '); writeln(medico.cpf);
@@ -201,6 +213,7 @@ begin
 		write('Endereço: '); writeln(medico.endereco);
 		write('Salário: '); writeln(medico.salario);
 		writeln('');
+		end;
 	end;	        
 	close(db);
 	writeln('Pressione qualquer tecla para retornar ao menu principal');
@@ -228,6 +241,7 @@ begin
 	write('Telefone: '); readln(medico.telefone);
 	write('Endereço: '); readln(medico.endereco);
 	write('Salário: '); readln(medico.salario);	
+	medico.ativo:=1;
 	append(db);
 	write(db,medico);	
 	close(db);	
@@ -258,7 +272,7 @@ begin
 	while not eof(db) do
 	begin
 		read(db,medico);
-		if((pos(termos,medico.nome)>0)		or (pos(termos,medico.cpf)>0)		or (pos(termos,medico.crm)>0)) then
+		if((medico.ativo = 1) and    ((pos(termos,medico.nome)>0)		or (pos(termos,medico.cpf)>0)		or (pos(termos,medico.crm)>0))) then
 			count:=count+1;
 	end;		
 	close(db);	
@@ -269,7 +283,7 @@ begin
 	begin
 		clrscr;
 		read(db,medico);	
-		if((pos(termos,medico.nome)>0)		or (pos(termos,medico.cpf)>0)		or (pos(termos,medico.crm)>0)) then		
+		if((medico.ativo = 1) and    ((pos(termos,medico.nome)>0)		or (pos(termos,medico.cpf)>0)		or (pos(termos,medico.crm)>0))) then		
 		begin
 		position:=position+1;
 		writeln('--> Médico localizado [',position,'/',count,']');
@@ -337,6 +351,36 @@ begin
 end;
 
 
+procedure excluirMedico(var db:db_medicos);
+var
+	choice:char;
+begin
+		medico:=selecionarMedico(medicos);
+		clrscr;
+		if(medico.nome <> 'NULL') then
+		begin		
+		writeln('--> Dados Atuais');
+		write('Nome: '); writeln(medico.nome);
+		write('CPF: '); writeln(medico.cpf);
+		write('CRM: '); writeln(medico.crm);
+		write('Telefone: '); writeln(medico.telefone);
+		write('Endereço: '); writeln(medico.endereco);
+		write('Salário: '); writeln(medico.salario);
+		writeln('');
+		medico.ativo := 0;
+		writeln('Aperte ENTER para CONFIRMAR A EXCLUSAO ou ESC para cancelar ');		
+		choice:= readkey;
+		if(choice = #13) then  
+		begin
+		reset(db);
+		seek(db, medico.position-1);	
+		write(db,medico);
+		close(db);
+		end;	
+		end;		
+end;
+
+
 procedure listarPacientes(var db:db_pacientes);
 var
 	paciente:type_paciente;
@@ -345,7 +389,9 @@ begin
 	reset(db);
 	while not eof(db) do
 	begin
-		read(db,paciente);		
+		read(db,paciente);	
+		if(paciente.ativo = 1) then
+		begin	
 		write('----');
 		write('Nome: '); writeln(paciente.nome);
 		write('CPF: '); writeln(paciente.cpf);
@@ -354,6 +400,7 @@ begin
 		write('Endereço: '); writeln(paciente.endereco);
 		write('Observações: '); writeln(paciente.observacoes);
 		writeln('');
+		end;
 	end;	        
 	close(db);
 	writeln('Pressione qualquer tecla para retornar ao menu principal');
@@ -369,6 +416,8 @@ begin
 
 		paciente:=selecionarPaciente(db);
 		clrscr;
+		if(paciente.nome <> 'NULL') then
+		begin
 		writeln('--> Dados Atuais');
 		write('Nome: '); writeln(paciente.nome);
 		write('CPF: '); writeln(paciente.cpf);
@@ -392,6 +441,40 @@ begin
 		seek(db, paciente.position-1);	
 		write(db,paciente);
 		close(db);	
+		end;
+		end;
+				
+end;
+
+
+
+procedure excluirPaciente(var db:db_pacientes);
+var
+	choice:char;
+begin
+
+		paciente:=selecionarPaciente(db);
+		clrscr;
+		if(paciente.nome <> 'NULL') then
+		begin
+		writeln('--> Dados Atuais');
+		write('Nome: '); writeln(paciente.nome);
+		write('CPF: '); writeln(paciente.cpf);
+		write('Convênio: '); writeln(paciente.convenio);
+		write('Telefone: '); writeln(paciente.telefone);
+		write('Endereço: '); writeln(paciente.endereco);
+		write('Observações: '); writeln(paciente.observacoes);
+		writeln('');		
+		writeln('Aperte ENTER para CONFIRMAR A EXCLUSAO ou ESC para cancelar ');		
+		choice:= readkey;
+		if(choice = #13) then  
+		begin
+		paciente.ativo := 0;
+		reset(db);
+		seek(db, paciente.position-1);	
+		write(db,paciente);
+		close(db);
+		end;	
 		end;
 				
 end;
@@ -432,6 +515,7 @@ clrscr;
 				consulta.valor := valor;
 				consulta.medico := medico;
 				consulta.paciente := paciente;
+				consulta.ativo:=1;
 				clrscr;
 				writeln('---------------------------------------');
 				writeln('Agendamento de Consulta');
@@ -472,13 +556,16 @@ begin
 	reset(db);
 	while not eof(db) do
 	begin
-		read(db,consulta);		
+		read(db,consulta);
+		if(consulta.ativo = 1) then
+		begin		
 		writeln('--> Consulta localizada');
 		write('Paciente: '); writeln(consulta.paciente.nome);
 		write('Médico: '); writeln(consulta.medico.nome);
 		write('Data: '); writeln(consulta.data);
 		write('Valor: '); writeln(consulta.valor:2:2);
 		writeln('');
+		end;
 	end;	        
 	close(db);
 	writeln('Pressione qualquer tecla para retornar ao menu principal');
@@ -507,7 +594,7 @@ begin
 	while not eof(db) do
 	begin
 		read(db,consulta);
-		if((
+		if((consulta.ativo = 1) and    ((
 		
 		pos(termos,consulta.paciente.nome)>0)
 		or (pos(termos,consulta.medico.nome)>0)				
@@ -515,7 +602,7 @@ begin
 		or (pos(termos,consulta.paciente.cpf)>0)
 		or (pos(termos,consulta.medico.cpf)>0)		
 		or (pos(termos,consulta.medico.crm)>0)		
-		or (pos(termos,consulta.data)>0)			
+		or (pos(termos,consulta.data)>0))			
 		
 		) then
 			count:=count+1;
@@ -528,7 +615,7 @@ begin
 	begin
 		clrscr;
 		read(db,consulta);	
-		if((
+	if((consulta.ativo = 1) and    ((
 		
 		pos(termos,consulta.paciente.nome)>0)
 		or (pos(termos,consulta.medico.nome)>0)				
@@ -536,7 +623,7 @@ begin
 		or (pos(termos,consulta.paciente.cpf)>0)
 		or (pos(termos,consulta.medico.cpf)>0)		
 		or (pos(termos,consulta.medico.crm)>0)		
-		or (pos(termos,consulta.data)>0)				
+		or (pos(termos,consulta.data)>0))				
 		) then		
 		begin
 		position:=position+1;
@@ -602,6 +689,41 @@ begin
 end;
 
 
+
+procedure excluirConsulta(var db:db_consultas;var medicos:db_medicos;var pacientes:db_pacientes);
+var
+	choice:char;
+	consulta:type_consulta;
+	temp_position:integer;
+begin
+
+		consulta:=selecionarConsulta(db);
+		if(consulta.paciente.nome <> 'NULL') then
+		begin
+		clrscr;
+		writeln('--> Dados Atuais');
+		write('Paciente: '); writeln(consulta.paciente.nome);
+		write('Médico: '); writeln(consulta.medico.nome);
+		write('Data: '); writeln(consulta.data);
+		write('Valor: '); writeln(consulta.valor:2:2);
+		temp_position:= consulta.position;
+		writeln('');
+		consulta.ativo := 0;
+		consulta.position:=temp_position;
+		writeln('Aperte ENTER para CONFIRMAR ou ESC para cancelar ');		
+		choice:= readkey;
+		if(choice = #13) then  
+		begin
+		reset(db);
+		seek(db, consulta.position-1);	
+		write(db,consulta);
+		close(db);	
+		end;
+		end;
+				
+end;
+
+
 //---------------===============================----------------=========================-----------------------------------
 	
 	
@@ -620,6 +742,7 @@ Begin
 	writeln('3 - Pesquisar');
 	writeln('5 - Listar');
 	writeln('7 - Alterar');
+	writeln('9 - Excluir');
 	writeln('');
 	writeln('0 - Sair do Sistema');
 	writeln('');
@@ -710,7 +833,26 @@ Begin
 	    	   		alterarConsulta(consultas,medicos,pacientes);
 	    	   	END;
 					END;	    	   			    	   
-	    	END;								    	
+	    	END;
+				
+			9: 
+				BEGIN
+				    sub_menu := s_menu('Excluir');
+				    case sub_menu of
+	    	   	1: 
+	    	   	BEGIN
+		    	   	excluirMedico(medicos);
+	    	   	END;
+	    	   	2: 
+	    	   	BEGIN
+		    	   	excluirPaciente(pacientes);						    	   	
+	    	   	END;
+	    	   	3: 
+	    	   	BEGIN
+	    	   		//excluirConsulta(consultas,medicos,pacientes);
+	    	   	END;
+					END;	    
+				END;								    	
 	end;	
 	until(menu = 0);			
 End.
